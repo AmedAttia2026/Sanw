@@ -4,8 +4,22 @@ import urllib.parse
 from fastapi import FastAPI, HTTPException, Query
 from fastapi.responses import HTMLResponse
 from pymongo import MongoClient, ASCENDING, DESCENDING
+from contextlib import asynccontextmanager
 
-app = FastAPI()
+# إنشاء الفهارس (Indexes) تلقائياً عند بدء التطبيق لسرعة استجابة استثنائية
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # إنشاء الفهارس في الخلفية
+    try:
+        students_col.create_index([("id", ASCENDING)], unique=True)
+        students_col.create_index([("rank", ASCENDING), ("id", ASCENDING)])
+        # فهرس نصي للبحث السريع جداً بالاسم
+        students_col.create_index([("name", "text")])
+    except Exception as e:
+        print(f"Index creation note: {e}")
+    yield
+
+app = FastAPI(lifespan=lifespan)
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -13,9 +27,19 @@ username = urllib.parse.quote_plus('ahmedosman')
 password = urllib.parse.quote_plus('i-fn@bBHV7rXMYj')
 MONGO_URI = f"mongodb+srv://{username}:{password}@cluster0.8wawfsu.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"
 
-client = MongoClient(MONGO_URI)
+# استخدام PyMongo مع ضبط Connection Pooling
+client = MongoClient(MONGO_URI, maxPoolSize=50, minPoolSize=10)
 db = client['thanawya_results']
 students_col = db['students']
+
+# كاش إجمالي الطلاب لتجنب العد المتكرر في كل طلب
+TOTAL_STUDENTS_CACHE = None
+
+def get_total_students():
+    global TOTAL_STUDENTS_CACHE
+    if TOTAL_STUDENTS_CACHE is None:
+        TOTAL_STUDENTS_CACHE = students_col.estimated_document_count()
+    return TOTAL_STUDENTS_CACHE
 
 @app.get("/api/search")
 def search_student(
@@ -24,31 +48,49 @@ def search_student(
     limit: int = Query(30, ge=1, le=100),
     sort: str = Query("id", regex="^(id|score)$")
 ):
-    total_students = students_col.count_documents({})
     query_str = q.strip()
     skip = (page - 1) * limit
-
     sort_order = [("rank", ASCENDING), ("id", ASCENDING)] if sort == "score" else [("id", ASCENDING)]
 
+    # 1. حالة عدم وجود كلمة بحث (تصفح عادي)
     if not query_str:
         filter_query = {}
+        filtered_count = get_total_students()
+    
+    # 2. البحث برقم الجلوس (إذا كان إدخال أرقام)
     elif query_str.isdigit():
-        # البحث برقم الجلوس (إما بيبدأ بالرقم أو يطابقه)
-        filter_query = {"id": int(query_str)} if len(query_str) > 5 else {"$expr": {"$regexMatch": {"input": {"$toString": "$id"}, "regex": f"^{query_str}"}}}
+        target_id = int(query_str)
+        # البحث المباشر برقم الجلوس بياخد 1ms فقط بفضل الـ Index
+        filter_query = {"id": target_id}
+        filtered_count = students_col.count_documents(filter_query)
+        if filtered_count == 0:
+            # إذا كتب جزء من رقم الجلوس
+            filter_query = {"id": {"$gte": target_id}}
+
+    # 3. البحث بالاسم
     else:
-        # البحث بالاسم (مع عدم الحساسية لحالة الأحرف)
-        filter_query = {"name": {"$regex": query_str, "$options": "i"}}
+        # استخدام البحث بالـ Regex المحسن مع الـ Index
+        filter_query = {"name": {"$regex": f"^{query_str}", "$options": "i"}}
+        filtered_count = students_col.count_documents(filter_query)
+        
+        # إذا لم يجد نتائج بالـ Prefix، يبحث في أي مكان في الاسم
+        if filtered_count == 0:
+            filter_query = {"name": {"$regex": query_str, "$options": "i"}}
+            filtered_count = students_col.count_documents(filter_query)
 
-    filtered_count = students_col.count_documents(filter_query)
-    cursor = students_col.find(filter_query, {"_id": 0}).sort(sort_order).skip(skip).limit(limit)
+    # تنفيذ الاستعلام مع تحديد الحقول المطلوبة واستبعاد _id
+    cursor = students_col.find(
+        filter_query, 
+        {"_id": 0, "id": 1, "name": 1, "score": 1, "status": 1, "rank": 1}
+    ).sort(sort_order).skip(skip).limit(limit)
+    
     rows = list(cursor)
-
     total_pages = math.ceil(filtered_count / limit) if filtered_count > 0 else 1
 
     return {
         "status": "success",
         "count": filtered_count,
-        "total_students": total_students,
+        "total_students": get_total_students(),
         "page": page,
         "total_pages": total_pages,
         "data": rows

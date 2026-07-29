@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>منصة الاستعلام عن نتيجة الثانوية العامة</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&family=Amiri:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
             --primary: #1e3a8a;
@@ -57,7 +57,7 @@
         .sort-btn { flex: 1; text-align: center; padding: 5px 4px; border: 1px solid var(--border-color); background: white; border-radius: 6px; cursor: pointer; font-weight: 700; color: var(--text-dark); transition: all 0.2s; font-size: clamp(0.68rem, 2.2vw, 0.85rem); }
         .sort-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
 
-        /* Grid */
+        /* عرض مربعين بجانب بعض على الموبايل 2-Column Grid */
         .results-container { 
             display: grid; 
             grid-template-columns: repeat(2, 1fr); 
@@ -73,12 +73,6 @@
             display: flex; 
             flex-direction: column; 
             justify-content: space-between; 
-            animation: fadeIn 0.3s ease;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(6px); }
-            to { opacity: 1; transform: translateY(0); }
         }
 
         .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem; padding-bottom: 0.4rem; border-bottom: 1px dashed var(--border-color); flex-wrap: wrap; gap: 2px; }
@@ -110,26 +104,6 @@
         .rank-value { font-size: clamp(0.72rem, 2.2vw, 0.95rem); font-weight: 800; color: var(--success); }
         .rank-total { font-size: clamp(0.55rem, 1.6vw, 0.68rem); color: var(--text-muted); display: block; font-weight: 600; }
         
-        /* زر عرض الشهادة */
-        .btn-cert {
-            margin-top: 0.5rem;
-            width: 100%;
-            padding: 0.4rem;
-            background: linear-gradient(135deg, #1e3a8a, #2563eb);
-            color: #ffffff;
-            border: none;
-            border-radius: 6px;
-            font-weight: 700;
-            font-size: clamp(0.65rem, 2vw, 0.8rem);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 4px;
-            transition: all 0.2s;
-        }
-        .btn-cert:hover { opacity: 0.9; transform: translateY(-1px); }
-
         /* Pagination Responsive Styles */
         .pagination-container { display: flex; justify-content: center; align-items: center; gap: 3px; margin-top: 1.2rem; flex-wrap: wrap; }
         .page-btn { padding: 5px 10px; border: 1px solid var(--border-color); background: white; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: clamp(0.7rem, 2.2vw, 0.85rem); transition: all 0.2s; touch-action: manipulation; }
@@ -140,167 +114,7 @@
         .no-results { text-align: center; padding: 2rem 1rem; background: white; border-radius: 12px; color: var(--text-muted); grid-column: 1 / -1; font-size: 0.85rem; }
         footer { text-align: center; padding: 1rem; color: var(--text-muted); font-size: 0.75rem; margin-top: auto; }
 
-        /* Modal / Certificate Popup Styles */
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(15, 23, 42, 0.85);
-            backdrop-filter: blur(4px);
-            display: none;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
-            padding: 0.5rem;
-        }
-        .modal-overlay.show { display: flex; }
-
-        .cert-modal-content {
-            position: relative;
-            max-width: 800px;
-            width: 100%;
-            background: #0d1527;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            max-height: 95vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .cert-close-btn {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background: rgba(255,255,255,0.1);
-            color: #fff;
-            border: none;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            font-size: 1.2rem;
-            cursor: pointer;
-            z-index: 10;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* Certificate Design */
-        .certificate-container {
-            background: #0d1527 !important;
-            color: #e2e8f0 !important;
-            padding: 2.5rem 1.5rem;
-            border: 3px solid #d97706 !important;
-            outline: 2px solid #0d1527 !important;
-            outline-offset: -8px;
-            margin: 10px;
-            border-radius: 8px;
-            position: relative;
-            text-align: center;
-            direction: ltr;
-            box-sizing: border-box;
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-        }
-
-        .cert-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-            font-size: 0.75rem;
-            color: #94a3b8;
-        }
-        .cert-header-right { text-align: right; direction: rtl; }
-        .cert-header-left { text-align: left; }
-        .cert-badge-icon {
-            width: 42px;
-            height: 42px;
-            border-radius: 50%;
-            border: 1px dashed #d97706;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #f59e0b;
-            font-size: 1.2rem;
-            margin: 0 auto;
-        }
-
-        .cert-main-title {
-            color: #f1f5f9;
-            font-size: clamp(1.2rem, 3.5vw, 2.2rem);
-            font-weight: 800;
-            letter-spacing: 2px;
-            margin-bottom: 0.2rem;
-            font-family: 'Cairo', sans-serif;
-        }
-        .cert-sub-title {
-            color: #d97706;
-            font-size: clamp(0.65rem, 1.8vw, 0.85rem);
-            letter-spacing: 1.5px;
-            margin-bottom: 1rem;
-            font-weight: 700;
-        }
-
-        .cert-text-certify {
-            color: #cbd5e1;
-            font-size: clamp(0.75rem, 2vw, 0.95rem);
-            margin-bottom: 1rem;
-        }
-
-        .cert-student-name {
-            font-family: 'Amiri', serif;
-            color: #fef08a;
-            font-size: clamp(1.4rem, 4.5vw, 2.8rem);
-            font-weight: 700;
-            margin: 0.5rem 0;
-            direction: rtl;
-        }
-
-        .cert-student-id {
-            color: #94a3b8;
-            font-size: clamp(0.7rem, 2vw, 0.85rem);
-            margin-bottom: 1rem;
-            direction: rtl;
-        }
-
-        .cert-text-pass {
-            color: #cbd5e1;
-            font-size: clamp(0.75rem, 2vw, 0.95rem);
-            margin-bottom: 0.5rem;
-        }
-
-        .cert-score-value {
-            color: #22c55e;
-            font-size: clamp(1.2rem, 3.5vw, 1.8rem);
-            font-weight: 800;
-            border-bottom: 2px solid #22c55e;
-            display: inline-block;
-            padding-bottom: 2px;
-            margin-bottom: 2rem;
-        }
-
-        .cert-footer {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-end;
-            margin-top: 1rem;
-            direction: rtl;
-            font-size: 0.8rem;
-        }
-        .cert-footer-col { text-align: center; }
-        .cert-footer-title { color: #f8fafc; font-weight: 700; margin-bottom: 2px; }
-        .cert-footer-sub { color: #64748b; font-size: 0.7rem; }
-
-        .cert-actions {
-            background: #0f172a;
-            padding: 0.8rem;
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-        }
-
-        /* Desktop Layout Adjustment */
+        /* Tablet & Desktop Layout Adjustment */
         @media (min-width: 640px) {
             .container { padding: 0 1rem; }
             .input-group { flex: 1; }
@@ -310,64 +124,6 @@
             .sort-btn { flex: initial; padding: 6px 12px; }
             .results-container { grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
             .student-card { padding: 1rem; }
-        }
-
-        /* إصلاح مشكلة إزالة الخلفية الغامقة على الموبايل والكمبيوتر عند الطباعة */
-        @media print {
-            @page {
-                size: A4 portrait;
-                margin: 0;
-            }
-            
-            html, body {
-                background: #0d1527 !important;
-                color-scheme: light !important;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-                margin: 0 !important;
-                padding: 0 !important;
-                height: 100vh;
-            }
-
-            body * { visibility: hidden; }
-            
-            #certModal, #certModal * { 
-                visibility: visible; 
-            }
-            
-            #certModal { 
-                position: absolute; 
-                left: 0; 
-                top: 0; 
-                width: 100%; 
-                height: 100%; 
-                background: #0d1527 !important; 
-                display: flex !important;
-                align-items: center;
-                justify-content: center;
-                padding: 0;
-            }
-
-            .cert-modal-content { 
-                box-shadow: none !important; 
-                border-radius: 0 !important; 
-                background: #0d1527 !important;
-                width: 100% !important;
-                max-width: 100% !important;
-            }
-
-            .certificate-container {
-                background: #0d1527 !important;
-                color: #e2e8f0 !important;
-                border: 3px solid #d97706 !important;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-                margin: 20px !important;
-            }
-
-            .cert-actions, .cert-close-btn { 
-                display: none !important; 
-            }
         }
     </style>
 </head>
@@ -393,7 +149,7 @@
         </div>
 
         <div class="stats-bar">
-            <span id="resultStats">جاري تحميل البيانات...</span>
+            <span id="resultStats">جاري الاتصال...</span>
             <div class="sort-controls">
                 <span>الترتيب:</span>
                 <button class="sort-btn active" id="sortIdBtn" onclick="setSortMode('id')"><i class="fa-solid fa-arrow-down-1-9"></i> رقم الجلوس</button>
@@ -406,82 +162,11 @@
         <div class="pagination-container" id="paginationContainer"></div>
     </div>
 
-    <!-- Modal الشهادة -->
-    <div class="modal-overlay" id="certModal">
-        <div class="cert-modal-content">
-            <button class="cert-close-btn" onclick="closeCertModal()">&times;</button>
-
-            <div class="certificate-container" id="certificatePrintArea">
-                <div class="cert-header">
-                    <div class="cert-header-right">
-                        <div><strong>جمهورية مصر العربية</strong></div>
-                        <div>وزارة التربية والتعليم والتعليم الفني</div>
-                    </div>
-                    <div class="cert-badge-icon">
-                        <i class="fa-solid fa-award"></i>
-                    </div>
-                    <div class="cert-header-left">
-                        <div><strong>التاريخ الرسمي</strong></div>
-                        <div id="certDate">2026/07/29</div>
-                    </div>
-                </div>
-
-                <div class="cert-main-title">CERTIFICATE OF ACADEMIC EXCELLENCE</div>
-                <div class="cert-sub-title">OFFICIAL ACADEMIC ACHIEVEMENT CERTIFICATE</div>
-
-                <div class="cert-text-certify">This is to officially certify that student:</div>
-
-                <div class="cert-student-name" id="certStudentName">هاجر رشدى محمد صبرى محمد سلامه</div>
-                <div class="cert-student-id">رقم الجلوس المعتمد: (<span id="certStudentId">#2576389</span>)</div>
-
-                <div class="cert-text-pass">has successfully passed the final academic examinations with remarkable distinction</div>
-
-                <div class="cert-score-value">scoring: <span id="certPercentage">90.47%</span></div>
-
-                <div class="cert-footer">
-                    <div class="cert-footer-col">
-                        <div class="cert-footer-title">رئيس لجنة النظام والمراقبة</div>
-                        <div class="cert-footer-sub">توقيع معتمد</div>
-                    </div>
-                    <div class="cert-footer-col">
-                        <div class="cert-badge-icon" style="width:36px; height:36px; font-size:1rem;">
-                            <i class="fa-solid fa-stamp"></i>
-                        </div>
-                        <div class="cert-footer-sub" style="margin-top:2px;">الختم الرسمي</div>
-                    </div>
-                    <div class="cert-footer-col">
-                        <div class="cert-footer-title">وزير التربية والتعليم</div>
-                        <div class="cert-footer-sub">اعتماد إلكتروني نافذ</div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="cert-actions">
-                <button class="btn" onclick="window.print()"><i class="fa-solid fa-print"></i> طباعة الشهادة / PDF</button>
-            </div>
-        </div>
-    </div>
-
     <footer>
         <p>نظام استعلام نتائج الثانوية العامة &copy; 2026 | Ahmed Attia</p>
     </footer>
 
     <script>
-        const mockDatabase = [
-            { id: "2576389", name: "هاجر رشدى محمد صبرى محمد سلامه", score: "289.5", status: "ناجح", rank: 1 },
-            { id: "2576390", name: "محمد أحمد إبراهيم محمود", score: "310.0", status: "ناجح", rank: 2 },
-            { id: "2576391", name: "فاطمة محمود علي حسن", score: "275.0", status: "ناجح", rank: 15 },
-            { id: "2576392", name: "محمود حسن عبد الله السيد", score: "295.5", status: "ناجح", rank: 5 },
-            { id: "2576393", name: "سارة عبد الرحمن محمد", score: "305.0", status: "ناجح", rank: 3 },
-            { id: "2576394", name: "يوسف إبراهيم محمد علي", score: "190.0", status: "راسب", rank: 1200 },
-            { id: "2576395", name: "منى صابر عبد اللطيف", score: "245.0", status: "دور ثان", rank: 450 },
-            { id: "2576396", name: "كريم أحمد متولي", score: "288.0", status: "ناجح", rank: 8 },
-            { id: "2576397", name: "نوران السيد بيومي", score: "301.5", status: "ناجح", rank: 4 },
-            { id: "2576398", name: "إسلام عادل مصطفى", score: "260.0", status: "ناجح", rank: 150 },
-            { id: "2576399", name: "آية حسام الدين أحمد", score: "292.0", status: "ناجح", rank: 6 },
-            { id: "2576400", name: "تامر حامد الشريف", score: "210.0", status: "دور ثان", rank: 890 }
-        ];
-
         const searchInput = document.getElementById('searchInput');
         const searchBtn = document.getElementById('searchBtn');
         const clearBtn = document.getElementById('clearBtn');
@@ -491,19 +176,9 @@
         const sortIdBtn = document.getElementById('sortIdBtn');
         const sortScoreBtn = document.getElementById('sortScoreBtn');
 
-        const certModal = document.getElementById('certModal');
-        const certStudentName = document.getElementById('certStudentName');
-        const certStudentId = document.getElementById('certStudentId');
-        const certPercentage = document.getElementById('certPercentage');
-        const certDate = document.getElementById('certDate');
-
         let currentPage = 1;
         let currentSort = 'id';
         let searchTimeout = null;
-        let currentStudentsData = [];
-
-        const today = new Date();
-        certDate.innerText = today.getFullYear() + '/' + String(today.getMonth() + 1).padStart(2, '0') + '/' + String(today.getDate()).padStart(2, '0');
 
         window.addEventListener('DOMContentLoaded', () => fetchResults('', 1));
 
@@ -521,48 +196,39 @@
 
         function fetchResults(query, page = 1) {
             currentPage = page;
-            resultStats.innerText = "جاري البحث واسترجاع البيانات...";
-
-            setTimeout(() => {
-                let filtered = mockDatabase.filter(student => 
-                    student.name.includes(query) || student.id.includes(query)
-                );
-
-                if (currentSort === 'score') {
-                    filtered.sort((a, b) => parseFloat(b.score) - parseFloat(a.score));
-                } else {
-                    filtered.sort((a, b) => parseInt(a.id) - parseInt(b.id));
-                }
-
-                const limit = 30;
-                const totalStudents = filtered.length;
-                const totalPages = Math.ceil(totalStudents / limit) || 1;
-                const start = (page - 1) * limit;
-                const paginatedData = filtered.slice(start, start + limit);
-
-                currentStudentsData = paginatedData;
-                renderResults(paginatedData, totalStudents);
-                renderPagination(page, totalPages);
-                
-                resultStats.innerText = `تم إيجاد ${totalStudents.toLocaleString('ar-EG')} نتيجة (صفحة ${page} من ${totalPages})`;
-            }, 150);
+            resultStats.innerText = "جاري جلب البيانات...";
+            fetch(`/api/search?q=${encodeURIComponent(query)}&page=${page}&limit=30&sort=${currentSort}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        renderResults(data.data, data.total_students);
+                        renderPagination(data.page, data.total_pages);
+                        resultStats.innerText = `تم إيجاد ${data.count.toLocaleString('ar-EG')} نتيجة (صفحة ${data.page} من ${data.total_pages})`;
+                    }
+                })
+                .catch(err => {
+                    resultStats.innerText = "خطأ في الاتصال بقاعدة البيانات";
+                    resultsContainer.innerHTML = `<div class="no-results"><h3>تعذر الاتصال بالخادم</h3></div>`;
+                    paginationContainer.innerHTML = '';
+                });
         }
 
         function renderResults(students, totalStudents) {
             resultsContainer.innerHTML = '';
             if (students.length === 0) {
-                resultsContainer.innerHTML = `<div class="no-results"><h3>لم نجد أي نتائج مطابقة لبحثك</h3></div>`;
+                resultsContainer.innerHTML = `<div class="no-results"><h3>لم نجد أي نتائج مطابقة</h3></div>`;
                 return;
             }
 
             const formattedTotal = totalStudents ? totalStudents.toLocaleString('ar-EG') : '';
 
-            students.forEach((student, index) => {
+            students.forEach(student => {
                 let statusClass = 'status-pass';
                 if (student.status.includes('ثان') || student.status.includes('ثاني')) statusClass = 'status-second';
                 if (student.status.includes('راسب')) statusClass = 'status-fail';
 
                 const formattedRank = Number(student.rank).toLocaleString('ar-EG');
+
                 const rawScore = parseFloat(student.score) || 0;
                 const percentage = ((rawScore / 320) * 100).toFixed(2);
 
@@ -576,44 +242,21 @@
                         </div>
                         <div class="student-name" title="${student.name}">${student.name}</div>
                     </div>
-                    <div>
-                        <div class="scores-row">
-                            <div class="score-box">
-                                <div class="score-label">المجموع</div>
-                                <div class="score-value">${student.score}</div>
-                                <span class="percentage-badge">(${percentage}%)</span>
-                            </div>
-                            <div class="score-box rank-box">
-                                <div class="score-label"><i class="fa-solid fa-trophy" style="color:#d97706;"></i> الترتيب</div>
-                                <div class="rank-value">المركز ${formattedRank}</div>
-                                ${formattedTotal ? `<span class="rank-total">من ${formattedTotal}</span>` : ''}
-                            </div>
+                    <div class="scores-row">
+                        <div class="score-box">
+                            <div class="score-label">المجموع</div>
+                            <div class="score-value">${student.score}</div>
+                            <span class="percentage-badge">(${percentage}%)</span>
                         </div>
-                        <button class="btn-cert" onclick="showCertificate(${index})">
-                            <i class="fa-solid fa-scroll"></i> عرض الشهادة
-                        </button>
+                        <div class="score-box rank-box">
+                            <div class="score-label"><i class="fa-solid fa-trophy" style="color:#d97706;"></i> الترتيب</div>
+                            <div class="rank-value">المركز ${formattedRank}</div>
+                            ${formattedTotal ? `<span class="rank-total">من ${formattedTotal}</span>` : ''}
+                        </div>
                     </div>
                 `;
                 resultsContainer.appendChild(card);
             });
-        }
-
-        function showCertificate(index) {
-            const student = currentStudentsData[index];
-            if (!student) return;
-
-            const rawScore = parseFloat(student.score) || 0;
-            const percentage = ((rawScore / 320) * 100).toFixed(2);
-
-            certStudentName.innerText = student.name;
-            certStudentId.innerText = '#' + student.id;
-            certPercentage.innerText = percentage + '%';
-
-            certModal.classList.add('show');
-        }
-
-        function closeCertModal() {
-            certModal.classList.remove('show');
         }
 
         function renderPagination(page, totalPages) {

@@ -2,7 +2,7 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>منصة الاستعلام عن نتيجة الثانوية العامة</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&display=swap" rel="stylesheet">
@@ -25,60 +25,79 @@
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; }
         body { background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%); color: var(--text-dark); min-height: 100vh; display: flex; flex-direction: column; }
-        header { background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); color: white; padding: 2.5rem 1rem; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
-        .header-title { font-size: 2.2rem; font-weight: 800; margin-bottom: 0.5rem; }
         
+        /* Header Responsive Styles */
+        header { background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%); color: white; padding: 2rem 1rem 3rem 1rem; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
+        .header-title { font-size: 1.6rem; font-weight: 800; margin-bottom: 0.3rem; }
         .developer-name { 
-            font-size: 1.8rem; 
+            font-size: 1.4rem; 
             font-weight: 800; 
             color: #60a5fa; 
             letter-spacing: 1px;
-            margin-top: 0.4rem;
+            margin-top: 0.2rem;
             text-shadow: 0 2px 4px rgba(0,0,0,0.3);
         }
 
-        .container { max-width: 1100px; margin: -2rem auto 3rem auto; padding: 0 1rem; width: 100%; flex: 1; }
-        .search-card { background: var(--card-bg); border-radius: 18px; padding: 2rem; box-shadow: var(--shadow-lg); margin-bottom: 1.5rem; border: 1px solid var(--border-color); }
-        .search-inputs { display: flex; gap: 12px; flex-wrap: wrap; }
-        .input-group { flex: 1; min-width: 280px; position: relative; }
-        .input-group i { position: absolute; right: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 1.1rem; }
-        .search-input { width: 100%; padding: 0.9rem 2.8rem 0.9rem 1rem; border: 2px solid var(--border-color); border-radius: 12px; font-size: 1.05rem; outline: none; transition: all 0.2s ease; }
-        .search-input:focus { border-color: var(--primary-accent); box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.15); }
-        .btn { padding: 0.9rem 2rem; background: var(--primary-accent); color: white; border: none; border-radius: 12px; font-weight: 700; font-size: 1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; }
-        .btn-clear { background: #e2e8f0; color: var(--text-dark); }
-        .stats-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; padding: 0 0.5rem; font-weight: 600; color: var(--text-muted); flex-wrap: wrap; gap: 10px; }
+        /* Container Responsive Styles */
+        .container { max-width: 1100px; margin: -1.8rem auto 2rem auto; padding: 0 0.8rem; width: 100%; flex: 1; }
+        .search-card { background: var(--card-bg); border-radius: 16px; padding: 1.2rem; box-shadow: var(--shadow-lg); margin-bottom: 1.2rem; border: 1px solid var(--border-color); }
+        .search-inputs { display: flex; gap: 8px; flex-wrap: wrap; }
+        .input-group { flex: 1 1 100%; position: relative; }
+        .input-group i { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 1rem; }
+        .search-input { width: 100%; padding: 0.8rem 2.5rem 0.8rem 0.8rem; border: 2px solid var(--border-color); border-radius: 12px; font-size: 0.95rem; outline: none; transition: all 0.2s ease; }
+        .search-input:focus { border-color: var(--primary-accent); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); }
         
-        .sort-controls { display: flex; align-items: center; gap: 8px; font-size: 0.9rem; }
-        .sort-btn { padding: 6px 14px; border: 1px solid var(--border-color); background: white; border-radius: 8px; cursor: pointer; font-weight: 700; color: var(--text-dark); transition: all 0.2s; }
+        .btn-group { display: flex; gap: 8px; width: 100%; }
+        .btn { flex: 1; padding: 0.8rem 1rem; background: var(--primary-accent); color: white; border: none; border-radius: 12px; font-weight: 700; font-size: 0.95rem; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px; touch-action: manipulation; }
+        .btn-clear { background: #e2e8f0; color: var(--text-dark); flex: 0 0 90px; }
+
+        .stats-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding: 0 0.2rem; font-weight: 600; color: var(--text-muted); flex-wrap: wrap; gap: 8px; font-size: 0.85rem; }
+        
+        .sort-controls { display: flex; align-items: center; gap: 6px; width: 100%; justify-content: space-between; }
+        .sort-btn { flex: 1; text-align: center; padding: 6px 8px; border: 1px solid var(--border-color); background: white; border-radius: 8px; cursor: pointer; font-weight: 700; color: var(--text-dark); transition: all 0.2s; font-size: 0.8rem; }
         .sort-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
 
-        .results-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.25rem; }
-        .student-card { background: var(--card-bg); border-radius: 16px; padding: 1.5rem; box-shadow: var(--shadow-sm); border: 1px solid var(--border-color); display: flex; flex-direction: column; justify-content: space-between; }
-        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; padding-bottom: 0.75rem; border-bottom: 1px dashed var(--border-color); }
-        .student-id { background: #eff6ff; color: var(--primary-accent); padding: 4px 12px; border-radius: 8px; font-weight: 700; font-size: 0.9rem; }
-        .status-badge { padding: 4px 12px; border-radius: 8px; font-size: 0.85rem; font-weight: 700; }
+        .results-container { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+        .student-card { background: var(--card-bg); border-radius: 14px; padding: 1.2rem; box-shadow: var(--shadow-sm); border: 1px solid var(--border-color); display: flex; flex-direction: column; justify-content: space-between; }
+        .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.8rem; padding-bottom: 0.6rem; border-bottom: 1px dashed var(--border-color); }
+        .student-id { background: #eff6ff; color: var(--primary-accent); padding: 4px 10px; border-radius: 8px; font-weight: 700; font-size: 0.85rem; }
+        .status-badge { padding: 4px 10px; border-radius: 8px; font-size: 0.8rem; font-weight: 700; }
         .status-pass { background: #dcfce7; color: var(--success); }
         .status-fail { background: #fee2e2; color: var(--danger); }
         .status-second { background: #fef3c7; color: var(--warning); }
-        .student-name { font-size: 1.2rem; font-weight: 700; color: var(--secondary); margin-bottom: 1rem; }
+        .student-name { font-size: 1.1rem; font-weight: 700; color: var(--secondary); margin-bottom: 0.8rem; line-height: 1.4; }
         
-        .scores-row { display: flex; gap: 10px; margin-top: 0.5rem; }
-        .score-box { flex: 1; background: #f8fafc; padding: 0.8rem; border-radius: 12px; text-align: center; border: 1px solid #f1f5f9; }
+        .scores-row { display: flex; gap: 8px; margin-top: 0.4rem; }
+        .score-box { flex: 1; background: #f8fafc; padding: 0.6rem; border-radius: 10px; text-align: center; border: 1px solid #f1f5f9; }
         .score-box.rank-box { background: #f0fdf4; border-color: #bbf7d0; }
-        .score-label { font-size: 0.75rem; color: var(--text-muted); font-weight: 700; margin-bottom: 4px; }
-        .score-value { font-size: 1.4rem; font-weight: 800; color: var(--primary); }
-        .percentage-badge { display: block; font-size: 0.85rem; font-weight: 700; color: var(--primary-accent); margin-top: 2px; }
-        .rank-value { font-size: 1.1rem; font-weight: 800; color: var(--success); }
-        .rank-total { font-size: 0.75rem; color: var(--text-muted); display: block; font-weight: 600; }
+        .score-label { font-size: 0.7rem; color: var(--text-muted); font-weight: 700; margin-bottom: 2px; }
+        .score-value { font-size: 1.25rem; font-weight: 800; color: var(--primary); }
+        .percentage-badge { display: block; font-size: 0.8rem; font-weight: 700; color: var(--primary-accent); margin-top: 1px; }
+        .rank-value { font-size: 1rem; font-weight: 800; color: var(--success); }
+        .rank-total { font-size: 0.7rem; color: var(--text-muted); display: block; font-weight: 600; }
         
-        .pagination-container { display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 2rem; flex-wrap: wrap; }
-        .page-btn { padding: 8px 16px; border: 1px solid var(--border-color); background: white; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.9rem; transition: all 0.2s; }
+        /* Pagination Responsive Styles */
+        .pagination-container { display: flex; justify-content: center; align-items: center; gap: 4px; margin-top: 1.5rem; flex-wrap: wrap; }
+        .page-btn { padding: 6px 12px; border: 1px solid var(--border-color); background: white; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.85rem; transition: all 0.2s; touch-action: manipulation; }
         .page-btn:hover:not(:disabled) { background: var(--primary-accent); color: white; border-color: var(--primary-accent); }
         .page-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
         .page-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
-        .no-results { text-align: center; padding: 4rem 2rem; background: white; border-radius: 16px; color: var(--text-muted); grid-column: 1 / -1; }
-        footer { text-align: center; padding: 1.5rem; color: var(--text-muted); font-size: 0.9rem; margin-top: auto; }
+        .no-results { text-align: center; padding: 3rem 1rem; background: white; border-radius: 14px; color: var(--text-muted); grid-column: 1 / -1; font-size: 0.9rem; }
+        footer { text-align: center; padding: 1.2rem; color: var(--text-muted); font-size: 0.8rem; margin-top: auto; }
+
+        /* Tablet & Laptop Styles */
+        @media (min-width: 640px) {
+            .header-title { font-size: 2.2rem; }
+            .developer-name { font-size: 1.8rem; }
+            .input-group { flex: 1; }
+            .btn-group { width: auto; }
+            .btn { flex: initial; }
+            .sort-controls { width: auto; }
+            .sort-btn { flex: initial; font-size: 0.9rem; padding: 6px 14px; }
+            .results-container { grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.25rem; }
+            .stats-bar { font-size: 0.9rem; }
+        }
     </style>
 </head>
 <body>
@@ -95,17 +114,19 @@
                     <i class="fa-solid fa-magnifying-glass"></i>
                     <input type="text" id="searchInput" class="search-input" placeholder="ادخل رقم الجلوس أو اسم الطالب..." autocomplete="off">
                 </div>
-                <button class="btn" id="searchBtn"><i class="fa-solid fa-magnifying-glass"></i> بحث</button>
-                <button class="btn btn-clear" id="clearBtn"><i class="fa-solid fa-rotate-right"></i> مسح</button>
+                <div class="btn-group">
+                    <button class="btn" id="searchBtn"><i class="fa-solid fa-magnifying-glass"></i> بحث</button>
+                    <button class="btn btn-clear" id="clearBtn"><i class="fa-solid fa-rotate-right"></i> مسح</button>
+                </div>
             </div>
         </div>
 
         <div class="stats-bar">
             <span id="resultStats">جاري الاتصال...</span>
             <div class="sort-controls">
-                <span>ترتيب حسب:</span>
+                <span>الترتيب:</span>
                 <button class="sort-btn active" id="sortIdBtn" onclick="setSortMode('id')"><i class="fa-solid fa-arrow-down-1-9"></i> رقم الجلوس</button>
-                <button class="sort-btn" id="sortScoreBtn" onclick="setSortMode('score')"><i class="fa-solid fa-trophy"></i> الأوائل (المجموع)</button>
+                <button class="sort-btn" id="sortScoreBtn" onclick="setSortMode('score')"><i class="fa-solid fa-trophy"></i> الأوائل</button>
             </div>
         </div>
 
@@ -201,9 +222,9 @@
                             <span class="percentage-badge">(${percentage}%)</span>
                         </div>
                         <div class="score-box rank-box">
-                            <div class="score-label"><i class="fa-solid fa-trophy" style="color:#d97706;"></i> الترتيب على الجمهورية</div>
+                            <div class="score-label"><i class="fa-solid fa-trophy" style="color:#d97706;"></i> الترتيب</div>
                             <div class="rank-value">المركز ${formattedRank}</div>
-                            ${formattedTotal ? `<span class="rank-total">من أصل ${formattedTotal} طالب</span>` : ''}
+                            ${formattedTotal ? `<span class="rank-total">من ${formattedTotal}</span>` : ''}
                         </div>
                     </div>
                 `;
@@ -225,8 +246,8 @@
             };
             paginationContainer.appendChild(prevBtn);
 
-            let startPage = Math.max(1, page - 2);
-            let endPage = Math.min(totalPages, page + 2);
+            let startPage = Math.max(1, page - 1);
+            let endPage = Math.min(totalPages, page + 1);
 
             if (startPage > 1) {
                 const firstBtn = document.createElement('button');
@@ -240,7 +261,7 @@
 
                 if (startPage > 2) {
                     const dots = document.createElement('span');
-                    dots.innerText = '...';
+                    dots.innerText = '..';
                     paginationContainer.appendChild(dots);
                 }
             }
@@ -259,7 +280,7 @@
             if (endPage < totalPages) {
                 if (endPage < totalPages - 1) {
                     const dots = document.createElement('span');
-                    dots.innerText = '...';
+                    dots.innerText = '..';
                     paginationContainer.appendChild(dots);
                 }
 

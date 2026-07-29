@@ -130,7 +130,7 @@
         }
         .btn-cert:hover { opacity: 0.9; transform: translateY(-1px); }
 
-        /* --- Pagination with Horizontal Scroll & Go-To Input --- */
+        /* Pagination Controls */
         .pagination-wrapper {
             display: flex;
             flex-direction: column;
@@ -146,9 +146,9 @@
             max-width: 100%;
             overflow-x: auto;
             padding: 4px 2px;
-            scrollbar-width: none; /* Firefox */
+            scrollbar-width: none;
         }
-        .pagination-container::-webkit-scrollbar { display: none; /* Chrome/Safari */ }
+        .pagination-container::-webkit-scrollbar { display: none; }
 
         .page-btn { 
             padding: 6px 12px; 
@@ -527,7 +527,6 @@
 
         let currentPage = 1;
         let currentSort = 'id';
-        let searchTimeout = null;
         let currentStudentsData = [];
 
         const today = new Date();
@@ -547,6 +546,7 @@
             fetchResults(searchInput.value.trim(), 1);
         }
 
+        // جلب البيانات مباشرة من الخادم (API)
         function fetchResults(query, page = 1) {
             currentPage = page;
             resultStats.innerText = "جاري جلب البيانات من الخادم...";
@@ -649,13 +649,11 @@
             certModal.classList.remove('show');
         }
 
-        /* --- Pagination Render function with Go-To feature --- */
         function renderPagination(page, totalPages) {
             paginationContainer.innerHTML = '';
             gotoPageContainer.innerHTML = '';
             if (totalPages <= 1) return;
 
-            // زر السابق
             const prevBtn = document.createElement('button');
             prevBtn.className = 'page-btn';
             prevBtn.innerText = 'السابق';
@@ -716,7 +714,6 @@
                 paginationContainer.appendChild(lastBtn);
             }
 
-            // زر التالي
             const nextBtn = document.createElement('button');
             nextBtn.className = 'page-btn';
             nextBtn.innerText = 'التالي';
@@ -727,7 +724,6 @@
             };
             paginationContainer.appendChild(nextBtn);
 
-            // مربع الانتقال السريع لمترجم الصفحة
             gotoPageContainer.innerHTML = `
                 <div class="goto-page-box">
                     <span>انتقال لصفحة:</span>
@@ -753,14 +749,16 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        searchInput.addEventListener('input', () => {
-            clearTimeout(searchTimeout);
-            searchTimeout = setTimeout(() => {
+        // --- إلغاء البحث التلقائي لمنع التهنيج والتقل ---
+        searchBtn.addEventListener('click', () => fetchResults(searchInput.value.trim(), 1));
+
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
                 fetchResults(searchInput.value.trim(), 1);
-            }, 300);
+            }
         });
 
-        searchBtn.addEventListener('click', () => fetchResults(searchInput.value.trim(), 1));
         clearBtn.addEventListener('click', () => {
             searchInput.value = '';
             fetchResults('', 1);

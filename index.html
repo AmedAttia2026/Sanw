@@ -130,12 +130,77 @@
         }
         .btn-cert:hover { opacity: 0.9; transform: translateY(-1px); }
 
-        /* Pagination Responsive Styles */
-        .pagination-container { display: flex; justify-content: center; align-items: center; gap: 3px; margin-top: 1.2rem; flex-wrap: wrap; }
-        .page-btn { padding: 5px 10px; border: 1px solid var(--border-color); background: white; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: clamp(0.7rem, 2.2vw, 0.85rem); transition: all 0.2s; touch-action: manipulation; }
+        /* --- Pagination with Horizontal Scroll & Go-To Input --- */
+        .pagination-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            margin-top: 1.5rem;
+        }
+
+        .pagination-container { 
+            display: flex; 
+            align-items: center; 
+            gap: 6px; 
+            max-width: 100%;
+            overflow-x: auto;
+            padding: 4px 2px;
+            scrollbar-width: none; /* Firefox */
+        }
+        .pagination-container::-webkit-scrollbar { display: none; /* Chrome/Safari */ }
+
+        .page-btn { 
+            padding: 6px 12px; 
+            border: 1px solid var(--border-color); 
+            background: white; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-weight: 700; 
+            font-size: clamp(0.75rem, 2.2vw, 0.85rem); 
+            transition: all 0.2s; 
+            white-space: nowrap;
+            touch-action: manipulation;
+        }
         .page-btn:hover:not(:disabled) { background: var(--primary-accent); color: white; border-color: var(--primary-accent); }
         .page-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
         .page-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .goto-page-box {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: white;
+            padding: 4px 8px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            font-size: clamp(0.75rem, 2vw, 0.85rem);
+            font-weight: 600;
+            color: var(--text-dark);
+        }
+
+        .goto-page-input {
+            width: 60px;
+            padding: 4px 6px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            text-align: center;
+            font-weight: 700;
+            outline: none;
+            font-size: 0.85rem;
+        }
+        .goto-page-input:focus { border-color: var(--primary-accent); }
+
+        .goto-btn {
+            padding: 4px 10px;
+            background: var(--primary-accent);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 0.8rem;
+        }
 
         .no-results { text-align: center; padding: 2rem 1rem; background: white; border-radius: 12px; color: var(--text-muted); grid-column: 1 / -1; font-size: 0.85rem; }
         footer { text-align: center; padding: 1rem; color: var(--text-muted); font-size: 0.75rem; margin-top: auto; }
@@ -377,7 +442,10 @@
 
         <div class="results-container" id="resultsContainer"></div>
 
-        <div class="pagination-container" id="paginationContainer"></div>
+        <div class="pagination-wrapper">
+            <div class="pagination-container" id="paginationContainer"></div>
+            <div id="gotoPageContainer"></div>
+        </div>
     </div>
 
     <!-- Modal الشهادة -->
@@ -446,6 +514,7 @@
         const clearBtn = document.getElementById('clearBtn');
         const resultsContainer = document.getElementById('resultsContainer');
         const paginationContainer = document.getElementById('paginationContainer');
+        const gotoPageContainer = document.getElementById('gotoPageContainer');
         const resultStats = document.getElementById('resultStats');
         const sortIdBtn = document.getElementById('sortIdBtn');
         const sortScoreBtn = document.getElementById('sortScoreBtn');
@@ -478,7 +547,6 @@
             fetchResults(searchInput.value.trim(), 1);
         }
 
-        // جلب البيانات مباشرة من الخادم / الداتا بيز (API)
         function fetchResults(query, page = 1) {
             currentPage = page;
             resultStats.innerText = "جاري جلب البيانات من الخادم...";
@@ -508,6 +576,7 @@
                     resultStats.innerText = "خطأ في الاتصال بقاعدة البيانات";
                     resultsContainer.innerHTML = `<div class="no-results"><h3>تعذر الاتصال بقاعدة البيانات، يرجى المحاولة لاحقاً</h3></div>`;
                     paginationContainer.innerHTML = '';
+                    gotoPageContainer.innerHTML = '';
                 });
         }
 
@@ -580,10 +649,13 @@
             certModal.classList.remove('show');
         }
 
+        /* --- Pagination Render function with Go-To feature --- */
         function renderPagination(page, totalPages) {
             paginationContainer.innerHTML = '';
+            gotoPageContainer.innerHTML = '';
             if (totalPages <= 1) return;
 
+            // زر السابق
             const prevBtn = document.createElement('button');
             prevBtn.className = 'page-btn';
             prevBtn.innerText = 'السابق';
@@ -610,6 +682,7 @@
                 if (startPage > 2) {
                     const dots = document.createElement('span');
                     dots.innerText = '..';
+                    dots.style.margin = '0 2px';
                     paginationContainer.appendChild(dots);
                 }
             }
@@ -629,6 +702,7 @@
                 if (endPage < totalPages - 1) {
                     const dots = document.createElement('span');
                     dots.innerText = '..';
+                    dots.style.margin = '0 2px';
                     paginationContainer.appendChild(dots);
                 }
 
@@ -642,6 +716,7 @@
                 paginationContainer.appendChild(lastBtn);
             }
 
+            // زر التالي
             const nextBtn = document.createElement('button');
             nextBtn.className = 'page-btn';
             nextBtn.innerText = 'التالي';
@@ -651,6 +726,31 @@
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             };
             paginationContainer.appendChild(nextBtn);
+
+            // مربع الانتقال السريع لمترجم الصفحة
+            gotoPageContainer.innerHTML = `
+                <div class="goto-page-box">
+                    <span>انتقال لصفحة:</span>
+                    <input type="number" id="gotoPageInput" class="goto-page-input" min="1" max="${totalPages}" value="${page}">
+                    <span>من ${totalPages.toLocaleString('ar-EG')}</span>
+                    <button class="goto-btn" onclick="executeGoToPage(${totalPages})">انتقال</button>
+                </div>
+            `;
+
+            document.getElementById('gotoPageInput').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') executeGoToPage(totalPages);
+            });
+        }
+
+        function executeGoToPage(totalPages) {
+            const input = document.getElementById('gotoPageInput');
+            let targetPage = parseInt(input.value);
+
+            if (isNaN(targetPage) || targetPage < 1) targetPage = 1;
+            if (targetPage > totalPages) targetPage = totalPages;
+
+            fetchResults(searchInput.value.trim(), targetPage);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         searchInput.addEventListener('input', () => {

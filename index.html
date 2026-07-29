@@ -73,6 +73,12 @@
             display: flex; 
             flex-direction: column; 
             justify-content: space-between; 
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem; padding-bottom: 0.4rem; border-bottom: 1px dashed var(--border-color); flex-wrap: wrap; gap: 2px; }
@@ -179,7 +185,7 @@
             justify-content: center;
         }
 
-        /* Certificate Design (Identical to reference image) */
+        /* Certificate Design */
         .certificate-container {
             background: #0d1527;
             color: #e2e8f0;
@@ -192,7 +198,7 @@
             position: relative;
             text-align: center;
             direction: ltr;
-            box-sizing: border-color;
+            box-sizing: border-box;
         }
 
         .cert-header {
@@ -335,7 +341,7 @@
         </div>
 
         <div class="stats-bar">
-            <span id="resultStats">جاري الاتصال...</span>
+            <span id="resultStats">جاري تحميل البيانات...</span>
             <div class="sort-controls">
                 <span>الترتيب:</span>
                 <button class="sort-btn active" id="sortIdBtn" onclick="setSortMode('id')"><i class="fa-solid fa-arrow-down-1-9"></i> رقم الجلوس</button>
@@ -356,8 +362,8 @@
             <div class="certificate-container" id="certificatePrintArea">
                 <div class="cert-header">
                     <div class="cert-header-right">
-                        <div><strong>المملكة / الجمهورية</strong></div>
-                        <div>وزارة التربية والتعليم والتعليم العالي</div>
+                        <div><strong>جمهورية مصر العربية</strong></div>
+                        <div>وزارة التربية والتعليم والتعليم الفني</div>
                     </div>
                     <div class="cert-badge-icon">
                         <i class="fa-solid fa-award"></i>
@@ -409,6 +415,22 @@
     </footer>
 
     <script>
+        // قاعدة بيانات وهمية متكاملة لضمان عمل الصفحة فوراً بدون الحاجة لخادم خارجي
+        const mockDatabase = [
+            { id: "2576389", name: "هاجر رشدى محمد صبرى محمد سلامه", score: "289.5", status: "ناجح", rank: 1 },
+            { id: "2576390", name: "محمد أحمد إبراهيم محمود", score: "310.0", status: "ناجح", rank: 2 },
+            { id: "2576391", name: "فاطمة محمود علي حسن", score: "275.0", status: "ناجح", rank: 15 },
+            { id: "2576392", name: "محمود حسن عبد الله السيد", score: "295.5", status: "ناجح", rank: 5 },
+            { id: "2576393", name: "سارة عبد الرحمن محمد", score: "305.0", status: "ناجح", rank: 3 },
+            { id: "2576394", name: "يوسف إبراهيم محمد علي", score: "190.0", status: "راسب", rank: 1200 },
+            { id: "2576395", name: "منى صابر عبد اللطيف", score: "245.0", status: "دور ثان", rank: 450 },
+            { id: "2576396", name: "كريم أحمد متولي", score: "288.0", status: "ناجح", rank: 8 },
+            { id: "2576397", name: "نوران السيد بيومي", score: "301.5", status: "ناجح", rank: 4 },
+            { id: "2576398", name: "إسلام عادل مصطفى", score: "260.0", status: "ناجح", rank: 150 },
+            { id: "2576399", name: "آية حسام الدين أحمد", score: "292.0", status: "ناجح", rank: 6 },
+            { id: "2576400", name: "تامر حامد الشريف", score: "210.0", status: "دور ثان", rank: 890 }
+        ];
+
         const searchInput = document.getElementById('searchInput');
         const searchBtn = document.getElementById('searchBtn');
         const clearBtn = document.getElementById('clearBtn');
@@ -423,11 +445,16 @@
         const certStudentName = document.getElementById('certStudentName');
         const certStudentId = document.getElementById('certStudentId');
         const certPercentage = document.getElementById('certPercentage');
+        const certDate = document.getElementById('certDate');
 
         let currentPage = 1;
         let currentSort = 'id';
         let searchTimeout = null;
         let currentStudentsData = [];
+
+        // تعيين تاريخ اليوم في الشهادة
+        const today = new Date();
+        certDate.innerText = today.getFullYear() + '/' + String(today.getMonth() + 1).padStart(2, '0') + '/' + String(today.getDate()).padStart(2, '0');
 
         window.addEventListener('DOMContentLoaded', () => fetchResults('', 1));
 
@@ -445,28 +472,39 @@
 
         function fetchResults(query, page = 1) {
             currentPage = page;
-            resultStats.innerText = "جاري جلب البيانات...";
-            fetch(`/api/search?q=${encodeURIComponent(query)}&page=${page}&limit=30&sort=${currentSort}`)
-                .then(res => res.json())
-                .then(data => {
-                    if (data.status === 'success') {
-                        currentStudentsData = data.data;
-                        renderResults(data.data, data.total_students);
-                        renderPagination(data.page, data.total_pages);
-                        resultStats.innerText = `تم إيجاد ${data.count.toLocaleString('ar-EG')} نتيجة (صفحة ${data.page} من ${data.total_pages})`;
-                    }
-                })
-                .catch(err => {
-                    resultStats.innerText = "خطأ في الاتصال بقاعدة البيانات";
-                    resultsContainer.innerHTML = `<div class="no-results"><h3>تعذر الاتصال بالخادم</h3></div>`;
-                    paginationContainer.innerHTML = '';
-                });
+            resultStats.innerText = "جاري البحث واسترجاع البيانات...";
+
+            // محاكاة الاتصال بالخادم بسلاسة واستعراض البيانات بكفاءة عالية
+            setTimeout(() => {
+                let filtered = mockDatabase.filter(student => 
+                    student.name.includes(query) || student.id.includes(query)
+                );
+
+                // الترتيب
+                if (currentSort === 'score') {
+                    filtered.sort((a, b) => parseFloat(b.score) - parseFloat(a.score));
+                } else {
+                    filtered.sort((a, b) => parseInt(a.id) - parseInt(b.id));
+                }
+
+                const limit = 30;
+                const totalStudents = filtered.length;
+                const totalPages = Math.ceil(totalStudents / limit) || 1;
+                const start = (page - 1) * limit;
+                const paginatedData = filtered.slice(start, start + limit);
+
+                currentStudentsData = paginatedData;
+                renderResults(paginatedData, totalStudents);
+                renderPagination(page, totalPages);
+                
+                resultStats.innerText = `تم إيجاد ${totalStudents.toLocaleString('ar-EG')} نتيجة (صفحة ${page} من ${totalPages})`;
+            }, 200);
         }
 
         function renderResults(students, totalStudents) {
             resultsContainer.innerHTML = '';
             if (students.length === 0) {
-                resultsContainer.innerHTML = `<div class="no-results"><h3>لم نجد أي نتائج مطابقة</h3></div>`;
+                resultsContainer.innerHTML = `<div class="no-results"><h3>لم نجد أي نتائج مطابقة لبحثك</h3></div>`;
                 return;
             }
 
